@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Создать новый чат</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+    <style>
+        .avatar {
+            width: 20px; /* Устанавливаем ширину аватара */
+            height: 20px; /* Устанавливаем высоту аватара */
+            border-radius: 50%; /* Делаем аватар кругом */
+            margin-right: 8px; /* Отступ справа от аватара */
+        }
+        .select2-container .select2-selection--multiple .select2-selection__choice {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Создать новый групповой чат</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="chat-name">Имя чата:</label>
+                <input type="text" class="form-control" name="name" placeholder="Enter chat name" required>
+            </div>
+            <div class="form-group">
+                <label for="participants">Участники:</label>
+                <select multiple class="form-control" id="participants" name="participants">
+                    {% for user in users %}
+                        {% if user.userprofile.avatar %}
+                            <option value="{{ user.id }}" data-avatar="{{ user.userprofile.avatar.url }}">
+                                {{ user.username }}
+                            </option>
+                        {% else %}
+                            <option value="{{ user.id }}" data-avatar="{% static 'default_avatar.png' %}">
+                                {{ user.username }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Создать чат</button>
+        </form>
+    </div>
+
+    <!-- Подключение jQuery и Select2 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="{% static 'js/select2-init.js' %}"></script> 
+</body>
+</html>
+

@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Редактирование профиля</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar-container {
+            width: 150px; /* Ширина контейнера для аватара */
+            height: 150px; /* Высота контейнера для аватара */
+            overflow: hidden; /* Скрываем часть изображения, выходящую за границы контейнера */
+            border: 2px solid #007bff; /* Синий контур для контейнера */
+            margin-bottom: 15px; /* Отступ снизу */
+            display: flex; /* Используем flexbox для выравнивания */
+            justify-content: center; /* Центрируем изображение по горизонтали */
+            align-items: center; /* Центрируем изображение по вертикали */
+            background-color: #f8f9fa; /* Светлый фон для контейнера */
+        }
+
+        #avatarPreview {
+            max-width: none; /* Убираем максимальную ширину */
+            width: auto; /* Устанавливаем авто ширину */
+            height: 100%; /* Высота 100% для заполнения контейнера */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Редактирование профиля</h2>
+
+        <div class="avatar-container">
+            {% if profile and profile.avatar %}
+                <img id="avatarPreview" src="{{ profile.avatar.url }}" alt="Avatar">
+            {% else %}
+                <img id="avatarPreview" src="{% static 'avatar.png' %}" alt="Default Avatar">
+            {% endif %}
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </form>
+
+        <a href="{% url 'default' %}" class="btn btn-secondary mb-3">Назад на главную</a>
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Ошибка!</strong> Пожалуйста, исправьте следующие ошибки:
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-warning">
+                {{ error }}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function previewAvatar(event) {
+            const input = event.target;
+            const reader = new FileReader();
+
+            reader.onload = function() {
+                const avatarPreview = document.getElementById('avatarPreview');
+                avatarPreview.src = reader.result; // Устанавливаем источник изображения
+            }
+
+            if (input.files[0]) {
+                reader.readAsDataURL(input.files[0]); // Читаем файл как URL
+            }
+        }
+    </script>
+</body>
+</html>
